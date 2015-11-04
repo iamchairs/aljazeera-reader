@@ -58,7 +58,9 @@ module.exports = function(dom) {
           markdown += read(childNode);
           break;
         case undefined:
-          markdown += childNode.data.replace(/^\n*/, '').replace(/\n*$/, '').replace(/^ \s*/, ' ').replace(/ \s*$/, ' ');
+          if(childNode.constructor.name === 'Text') {
+            markdown += childNode.data.replace(/^\n*/, '').replace(/\n*$/, '').replace(/^ \s*/, ' ').replace(/ \s*$/, ' ');
+          }
           break;
       }
     }
