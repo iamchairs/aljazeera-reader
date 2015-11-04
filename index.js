@@ -61,7 +61,7 @@ module.exports = (function() {
             var divs = dom.getElementsByTagName('div');
             var body = dom.getElementById('article-body');
 
-            if(!body.getElementsByTagName) {
+            if(!body || !body.getElementsByTagName) {
                if(cb) {
                   cb(null);
                }
@@ -96,6 +96,10 @@ module.exports = (function() {
 
             var domImages = dom.getElementsByTagName('img');
             var imgs = body.getElementsByTagName('img');
+
+            if(!imgs.push) {
+               imgs = [];
+            }
             
             for(var i = 0; i < domImages.length; i++) {
                var img = domImages[i];
