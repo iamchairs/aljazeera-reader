@@ -143,13 +143,25 @@ module.exports = (function() {
             var datetime = time.getAttribute('datetime');
 
             if(datetime) {
-               Article.datetime = new Date(datetime).toISOString().replace('T', ' ').replace('Z', '') + ' GMT+0000';
+               try {
+                  Article.datetime = new Date(datetime).toISOString().replace('T', ' ').replace('Z', '') + ' GMT+0000';
+               } catch(err) {
+                  if(cb) {
+                     cb(null);
+                  }
+
+                  defer.resolve(null);
+
+                  return false;
+               }
             } else {
                if(cb) {
                   cb(null);
                }
 
                defer.resolve(null);
+
+               return false;
             }
 
 
