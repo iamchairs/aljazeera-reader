@@ -144,7 +144,7 @@ module.exports = (function() {
 
             try {
                Article.datetime = new Date(datetime).toISOString().replace('T', ' ').replace('Z', '') + ' GMT+0000';
-            } catch(err) {
+            } catch(e) {
                return err('unable to parse datetime');
             }
 
