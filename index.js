@@ -35,10 +35,7 @@ module.exports = (function() {
 
          request(url, function(error, response, body) {
             if(error) {
-               defer.reject(error);
-               if(cb) {
-                  cb(error);
-               }
+               return err(error);
             }
 
             var Article = {
@@ -58,16 +55,15 @@ module.exports = (function() {
                dom = self.DOMParser.parseFromString(body, 'text/html');
             } catch(e) {}
 
+            if(!dom) {
+               return err('wasnt able to read dom');
+            }
+
             var divs = dom.getElementsByTagName('div');
             var body = dom.getElementById('article-body');
 
             if(!body || !body.getElementsByTagName) {
-               if(cb) {
-                  cb(null);
-               }
-
-               defer.resolve(null);
-               return false;
+               return err('wasnt able to find dom body');
             }
 
             var ps = body.getElementsByTagName('p');
@@ -142,28 +138,15 @@ module.exports = (function() {
             var time = dom.getElementsByTagName('time')[0];
             var datetime = time.getAttribute('datetime');
 
-            if(datetime) {
-               try {
-                  Article.datetime = new Date(datetime).toISOString().replace('T', ' ').replace('Z', '') + ' GMT+0000';
-               } catch(err) {
-                  if(cb) {
-                     cb(null);
-                  }
-
-                  defer.resolve(null);
-
-                  return false;
-               }
-            } else {
-               if(cb) {
-                  cb(null);
-               }
-
-               defer.resolve(null);
-
-               return false;
+            if(!datetime) {
+               return err('unable to find datetime');
             }
 
+            try {
+               Article.datetime = new Date(datetime).toISOString().replace('T', ' ').replace('Z', '') + ' GMT+0000';
+            } catch(err) {
+               return err('unable to parse datetime');
+            }
 
 
             if(cb) {
@@ -174,6 +157,18 @@ module.exports = (function() {
          });
 
          return defer.promise;
+
+         function err(str) {
+            console.error('Error from url: ' + url);
+            console.error(str);
+            defer.resolve(null);
+
+            if(cb) {
+               cb(null);
+            }
+
+            return false;
+         }
       }
    }
 })();
